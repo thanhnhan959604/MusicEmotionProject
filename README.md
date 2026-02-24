@@ -1,4 +1,15 @@
-# ĐỒ ÁN HỌC KỲ II
+<h1 align="center" font-size= 36px;><b>Xây dựng mô hình kết hợp đặc trưng âm thanh và văn bản trong bài toán phân loại nhạc theo cảm xúc</b></h1>
+
+
+## II. Yêu cầu
+* __Tổng quan:__ Mô hình được xây dựng dựa trên hai giai đoạn phá triển chính:
+    * __Giai đoạn 1:__ Xây dựng mô hình MLP (Multi-layer Perception).
+    * __Giai đoạn 2:__ Kết hợp đặc trưng văn bản để cải thiện độ chính xác.
+
+### 1. Triển khai giai đoạn 1.
+* __Data:__ Dữ liệu được sử dụng để huấn luyện mô hình là tập con __*autotagging_moodtheme*__ là tập con của kho dữ liệu audio __Jamendo__.
+* __Feather__: BEATs là mô hình đã được sử dụng để trích xuất đặc trưng âm thanh dựa trên file audio đã được xữ lý. 
+
 ## I. Cấu trúc thư mục.
 ```Text
 MusicEmotionProject/
@@ -40,6 +51,5 @@ MusicEmotionProject/
 └── README.md
 ```
 
-## II. Yêu cầu
-__Tổng quan:__ Xây dựng mô hình nhận diện cảm xúc âm nhạc kết hợp trích xuất lyric từ audio.
-__Mô hình:__
+## III. Các thư viện hỗ trợ.
+* __mutagen:__ lấy metadata từ audio
