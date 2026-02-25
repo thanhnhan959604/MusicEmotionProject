@@ -123,3 +123,5 @@ def create_metadata_csv():
 
 if __name__ == "__main__":
     create_metadata_csv()
+
+#chạy trên python 3.10
