@@ -1,15 +1,14 @@
 import os
 import csv
-import time
 import pandas as pd
 import lyricsgenius
-
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 # ===== CONFIG =====
-GENIUS_TOKEN = "XV3VmrcJ5XpX3m36vaGrdAxxbcl7xhw6i1C2HJowheEUYU0X2o84yXhsb1HkIuvl"
+GENIUS_TOKEN = "YOUR_TOKEN_HERE"
 METADATA_FILE = "data/metadata/audio_metadata.csv"
 OUTPUT_FILE = "data/lyrics/genius_lyrics.csv"
-SLEEP_TIME = 2
+MAX_WORKERS = 10
 
 
 def load_metadata():
@@ -18,12 +17,9 @@ def load_metadata():
         return None
 
     df = pd.read_csv(METADATA_FILE, encoding="utf-8-sig")
-
     df["TRACK_ID"] = df["TRACK_ID"].astype(str)
 
-    # ===== FIX YEAR FLOAT -> INT STRING =====
     clean_years = []
-
     for y in df["YEAR"]:
         if pd.notnull(y):
             try:
@@ -34,7 +30,6 @@ def load_metadata():
             clean_years.append("")
 
     df["YEAR"] = clean_years
-
     return df
 
 
@@ -46,7 +41,7 @@ def create_client():
         retries=3
     )
 
-    genius.verbose = True
+    genius.verbose = False
     genius.remove_section_headers = True
     genius.skip_non_songs = True
     genius.excluded_terms = ["(Remix)", "(Live)"]
@@ -58,88 +53,84 @@ def extract_year_from_song(song):
     try:
         if hasattr(song, "_body"):
             body = song._body
-
             if "release_date_components" in body:
                 comp = body["release_date_components"]
-
                 if comp and "year" in comp and comp["year"]:
                     return int(comp["year"])
-
     except:
         return None
 
     return None
 
 
+def process_row(row):
+    genius = create_client()  # mỗi thread tạo client riêng
+
+    track_id = row["TRACK_ID"]
+    title = str(row["TITLE"]).strip()
+    artist = str(row["ARTIST"]).strip()
+    metadata_year = row["YEAR"]
+
+    if not title or not artist:
+        return None
+
+    try:
+        song = genius.search_song(title=title, artist=artist)
+
+        if song is None:
+            return None
+
+        lyric = song.lyrics
+        if not lyric:
+            return None
+
+        genius_year = extract_year_from_song(song)
+
+        if metadata_year and genius_year:
+            if int(metadata_year) != genius_year:
+                return None
+
+        return {
+            "TRACK_ID": track_id,
+            "TITLE": title,
+            "ARTIST": artist,
+            "YEAR": metadata_year,
+            "LYRIC": lyric.strip()
+        }
+
+    except:
+        return None
+
+
 def fetch_lyrics():
 
-    print("===== FETCH LYRICS FROM GENIUS =====")
+    print("===== FETCH LYRICS FROM GENIUS (10 THREADS) =====")
 
     df_meta = load_metadata()
     if df_meta is None:
         return
 
-    genius = create_client()
-
     rows = []
     success = 0
     fail = 0
 
-    for _, row in df_meta.iterrows():
+    with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
 
-        track_id = row["TRACK_ID"]
-        title = str(row["TITLE"]).strip()
-        artist = str(row["ARTIST"]).strip()
-        metadata_year = row["YEAR"]  # đã clean ở load
+        futures = []
 
-        print("Đang xử lý:", track_id)
+        for _, row in df_meta.iterrows():
+            futures.append(executor.submit(process_row, row))
 
-        if not title or not artist:
-            fail += 1
-            continue
+        for future in as_completed(futures):
+            result = future.result()
 
-        try:
-            song = genius.search_song(title=title, artist=artist)
-
-            if song is None:
-                print("Không tìm thấy bài")
+            if result:
+                rows.append(result)
+                success += 1
+                print("[OK]", result["TRACK_ID"])
+            else:
                 fail += 1
-                continue
 
-            lyric = song.lyrics
-
-            if not lyric:
-                fail += 1
-                continue
-
-            genius_year = extract_year_from_song(song)
-
-            # ===== SO SÁNH NĂM DẠNG INT =====
-            if metadata_year and genius_year:
-
-                if int(metadata_year) != genius_year:
-                    print("Không khớp năm:", metadata_year, "vs", genius_year)
-                    fail += 1
-                    continue
-
-            rows.append({
-                "TRACK_ID": track_id,
-                "TITLE": title,
-                "ARTIST": artist,
-                "YEAR": metadata_year,
-                "LYRIC": lyric.strip()
-            })
-
-            success += 1
-            print("[OK]")
-
-        except Exception as e:
-            print("Lỗi:", e)
-            fail += 1
-
-        time.sleep(SLEEP_TIME)
-
-    # ===== SAVE FILE =====
     os.makedirs("data/lyrics", exist_ok=True)
 
     with open(OUTPUT_FILE, "w", newline="", encoding="utf-8-sig") as f:
