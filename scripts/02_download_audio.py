@@ -6,8 +6,8 @@ from concurrent.futures import ThreadPoolExecutor
 from threading import Semaphore
 import time
 
-csv_file = "../MLP/model/data/data/filter_mood.csv"
-save_dir = "../MLP/model/data/data/audio_mood"
+csv_file = "../data/intermediate/filter_mood.csv"
+save_dir = "../data/raw/audio_mood"
 os.makedirs(save_dir, exist_ok=True)
 
 client_id = "c2946d30" 
