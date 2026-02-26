@@ -26,7 +26,29 @@
     * __Lưu ý:__ Việc xử lý có thể sẽ chậm nếu file dữ liệu quá lớn (lên đến hàng triệu dòng). Tuy nhiên, với dữ liệu metadata âm nhạc thông thường, cách này mang lại hiệu quả dễ đọc và bảo trì.
     
 ### 2. Triển khai giai đoạn 2.
-
+* __Yêu cầu hệ thống & cài đặc:__
+    * Trước khi chạy script, cần cài đặc Python (phiên bản 3.7+).
+    * __Các thư viện cần thiết:__ `pip install pandas requests tqdm`
+* __Cấu trúc dữ liệu thư mục:__
+    * `../data/intermediate/`: Chứa file filter_moode.csv.
+    * `../data/raw/audio_mood`: Nơi script sẽ tự động tạo và lưu các file nhạc tải về.
+* __Quản lý tài nguyên và luồng:__
+    * `ThreadPoolExecutor(max_workers=10)`: Cho phép chạy tối đa 10 nhiệm vụ tải cùng một lúc để tăng tốc độ.
+    * `Semaphore(3)`: Thiết lập một chốt chặn kiểm soát truy cập. Dù có 10 luồng đang chạy, nhưng tại một thời điểm chỉ có tối đa 3 luồng được phép gửi yêu cầu tải thực tế để tránh bị API chặn (Rate Limiting)
+* __Nguyên lý hoạt động:__
+    * __Bước 1 - Xử lý ID:__ Chuyển đổi định dạng ID từ chuỗi sang số nguyên để khớp với cấu trúc API.
+    * __Bước 2 - Kiểm tra trùng lặp:__ Nếu file đã tồn tại trong thư mục lưu trữ, script sẽ bỏ qua để tiết kiệm thời gian và băng thông.
+    * __Bước 3 - Tải dạng Stream:__ Sử dụng `stream = true` và `iter_content` để ghi file theo từng khối (chunk). Cách này giúp máy không bị tràn bộ nhớ RAM khi tải các file nhạc dung lượng lớn.
+    * __Bước 4 - Độ trễ:__ Lệnh `time.sleep(0.3)` giúp tạo một khoảng ghi ngắn giữa các yêu cầu giữ cho kết nối ổn định hơn.
+* __Cách sử dụng:__
+    * __1.__ Đảm bảo file `filter_mood.csv` có cột tên là `TRACK_ID`
+    * __2.__ Thay đổi `client_id = "c2946d30"` nếu bạn có mã ứng dụng riêng từ Jamendo Developer Portal.
+    * __3.__ Chạy lệnh script bằng: `python ten_file_cua_ban.py`
+    * __4.__ Theo dõi tiến trình trên màn hình để biết dung lượng đã tải và thời gian dự kiến còn lại.
+* __Một số lưu ý quan trọng:__
+    * __Giới hạn API:__ Nếu lỗi 429 (Too Many Requests), hãy giảm số lượng trong `semaphore(3)` xuống thấp hơn hoặc tăng `time.sleep()`
+    * __Bản quyền:__ Hãy đảm bảo tuân thủ các điều khoản sử dụng của Jamendo đối với dữ liệu âm thanh được tải về.
+    * __Kết nối mạng:__ Nếu mạng không ổn định, tham số `timeout=30` sẽ tự động ngắt kết nối bị treo sau 30 giây để chuyển sang bài tiếp theo.
 ### 3. Triển khai giai đoạn 3.
 
 ### 4. Triển khai giai đoạn 4.
