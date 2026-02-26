@@ -43,13 +43,46 @@
 * __Cách sử dụng:__
     * __1.__ Đảm bảo file `filter_mood.csv` có cột tên là `TRACK_ID`
     * __2.__ Thay đổi `client_id = "c2946d30"` nếu bạn có mã ứng dụng riêng từ Jamendo Developer Portal.
-    * __3.__ Chạy lệnh script bằng: `python ten_file_cua_ban.py`
+    * __3.__ Chạy lệnh script bằng: `python 02_download_audio.py`
     * __4.__ Theo dõi tiến trình trên màn hình để biết dung lượng đã tải và thời gian dự kiến còn lại.
 * __Một số lưu ý quan trọng:__
     * __Giới hạn API:__ Nếu lỗi 429 (Too Many Requests), hãy giảm số lượng trong `semaphore(3)` xuống thấp hơn hoặc tăng `time.sleep()`
     * __Bản quyền:__ Hãy đảm bảo tuân thủ các điều khoản sử dụng của Jamendo đối với dữ liệu âm thanh được tải về.
     * __Kết nối mạng:__ Nếu mạng không ổn định, tham số `timeout=30` sẽ tự động ngắt kết nối bị treo sau 30 giây để chuyển sang bài tiếp theo.
+
 ### 3. Triển khai giai đoạn 3.
+* __Yêu cầu hệ thống và cài đặc:__
+    * Script được tối ưu hoá cho __Python 3.10__.
+    * __Thư viện cần thiết:__ `pip install mutagen` - đây là thư viện chính dùng để xử lý metadat của các tệp âm thanh (hỗ trợ MP3, FLAC, OGG, v.v.).
+* __Nguyên lý hoạt động:__
+    * __Bước 1 - Kiểm tra và quét tệp:__
+        * Đảm bảo thư mục đầu vào tồn tại đễ tránh lội hệ thống. `check_audio_folder_exists()`
+        * Tự động lọc và chỉ lấy những file có đuôi `mp3`, bỏ qua các file rác khác.
+    * __Bước 2 - Trích xuất thông tin kỹ thuật & Metadata:__
+        * Đoạn Script sử dụng hàm `extract_metadata_from_file` với mục đích triển khai hai nhiệm vụ chính
+            * __1. Lấy thông tin kỹ thuật:__ Lấy `duration` (thời lượng giây) và `bitrate` (chất lượng âm thanh) trực tiếp từ cấu trúc file MP3.
+            * __2. Thẻ ID3 (EasyID3):__ Trích xuất các thông tin do người dùng hoặc nhà phát hành ghi đè lên file như: Tên bài hát, Nghệ sĩ, Album, Năm phát hành và Thể loại.
+    * __Bước 3 - Xuất dữ liệu:__
+        * Tự động tạo thư mục `data/metadata` nếu nó chưa tồn tại.
+        * Sử dụng `encoding="utf-8-sig` khi ghi file CSV để đảm bảo tên bài hát có dấu tiếng Việt hoặcn ký tự đặc biệt không bị lỗi font.
+* __Các trường dữ liệu trong File CSV:__
+
+| Cột | Mô tả |
+| :--- | :--- |
+| **TRACK_ID** | Tên file nhạc (không bao gồm đuôi .mp3) |
+| **TITLE** | Tiêu đề bài hát trích xuất từ thẻ ID3 |
+| **ARTIST** | Tên ca sĩ/nghệ sĩ |
+| **ALBUM** | Tên album chứa bài hát |
+| **YEAR** | Năm phát hành |
+| **GENRE** | Thể loại nhạc (Pop, Rock, Ballad) |
+| **DURATION** | Thời lượng tính bằng giây (s) |
+| **BITRATE** | Chất lượng âm thanh (128kbps, 320kbps) |
+
+* __Lưu ý:__
+    * __1. File không có ID3 Tag:__ Một số file tải nhạc từ nguồn tự do không có thông tin Title, Artist... Khi đó, các cột này trong CSV sẽ để trống. Script đã xử lý lỗi này bằng ID3NoHeaderError để không dừng chương trình.
+    * __2. Định dạng ngày tháng:__ Trường `YEAR` thực tế lấy từ thẻ `date` trong EsayID3, đôi khi nó có thể trả về định dạng `YYYY-MM_DD` tuỳ vào nguồn file.
+    * __3. Quyền ghi file:__ Đảm bảo file CSV đầu ra (audio_metatdata) không đang "mở" khi đang chạy Script, nếu không Python sẽ báo lỗi `Permission denied`
+* __Cách chạy:__ Chạy lệnh Script bằng `python 03_extract_audio_metadata.py`
 
 ### 4. Triển khai giai đoạn 4.
 
