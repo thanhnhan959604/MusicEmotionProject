@@ -6,10 +6,10 @@ import lyricsgenius
 from tqdm import tqdm
 
 # ===== CẤU HÌNH (CONFIG) =====
-GENIUS_TOKEN = "FL-n454ZIpvBOZuUFDOY5t40U0Kp6DKCHnpwo0y1sWNythe870GQ-Furh6SEK8LB"
-METADATA_FILE = r"D:\KY_6\DA2\MusicEmotionProject\data\metadata\splits\audio_metadata_part_1.csv"
-OUTPUT_FILE = "data/lyrics/genius_lyrics_1.csv"
-SLEEP_TIME = 2
+GENIUS_TOKEN = "3q2A-FV8YbfekbkJ_Tlly5gMUJhGkpm0AMJ6RS6-rH5ByONI5fL-j03ut_NZ4M2O"
+METADATA_FILE = r"data\metadata\splits\audio_metadata_part_6.csv"
+OUTPUT_FILE = "data/lyrics/genius_lyrics_6.csv"
+SLEEP_TIME = 3
 
 def load_metadata():
     if not os.path.exists(METADATA_FILE):

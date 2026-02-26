@@ -7,8 +7,8 @@ from threading import Lock
 from tqdm import tqdm
 
 JAMENDO_CLIENT_ID = "c2946d30"
-METADATA_FILE = "data/metadata/splits/audio_metadata_part_2.csv"
-OUTPUT_FILE = "data/lyrics/splits_jamendo/jamendo_lyrics_2.csv"
+METADATA_FILE = "data/metadata/splits/audio_metadata_part_18.csv"
+OUTPUT_FILE = "data/lyrics/splits_jamendo/jamendo_lyrics_18.csv"
 
 MAX_WORKERS = 3
 DELAY_SECONDS = 5
