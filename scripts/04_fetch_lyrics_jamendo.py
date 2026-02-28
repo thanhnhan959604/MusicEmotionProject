@@ -13,7 +13,6 @@ OUTPUT_FILE = "data/lyrics/splits_jamendo/jamendo_lyrics_18.csv"
 MAX_WORKERS = 3
 DELAY_SECONDS = 5
 
-#gọi API một TRACK
 def get_single_track(track_id):
     clean_id = str(track_id).replace("track_", "")
     url = "https://api.jamendo.com/v3.0/tracks/"
@@ -48,7 +47,6 @@ def get_single_track(track_id):
         print("[ERROR] ", e)
         return None
 
-#THREAD xử lý 1 TRẠCk
 def process_track(track_id):
     print("Xử lý track: ", track_id)
 
@@ -68,8 +66,7 @@ def process_track(track_id):
         "TRACK_ID": track_id,
         "LYRIC": lyric_text
     }
-   
-#lấy lyric từ jamendo
+
 def fetch_lyrics():
     
     if not os.path.exists(METADATA_FILE):
@@ -111,8 +108,6 @@ def fetch_lyrics():
     print("Số bài có lời: ", count_has_lyrics)
     print("Số bài không có lời: ", count_no_lyrics)
 
-    #lưu file
-
     df_save = pd.DataFrame(final_results)
 
     df_save.to_csv(OUTPUT_FILE, index=False, encoding="utf-8-sig")
@@ -121,8 +116,3 @@ def fetch_lyrics():
 
 if __name__ == "__main__":
     fetch_lyrics()
-        
-
-
-
-

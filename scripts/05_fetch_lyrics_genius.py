@@ -5,7 +5,6 @@ import pandas as pd
 import lyricsgenius
 from tqdm import tqdm
 
-# ===== CẤU HÌNH (CONFIG) =====
 GENIUS_TOKEN = "3q2A-FV8YbfekbkJ_Tlly5gMUJhGkpm0AMJ6RS6-rH5ByONI5fL-j03ut_NZ4M2O"
 METADATA_FILE = r"data\metadata\splits\audio_metadata_part_6.csv"
 OUTPUT_FILE = "data/lyrics/genius_lyrics_6.csv"
@@ -87,10 +86,8 @@ def fetch_lyrics():
                 fail += 1
                 continue
 
-            # ===== LẤY NĂM TỪ JSON =====
             genius_year = extract_year_from_song(song)
 
-            # ===== SO SÁNH NĂM =====
             if metadata_year and genius_year:
                 if metadata_year not in genius_year:
                     print(f"Không khớp năm: {metadata_year} vs {genius_year}")
@@ -116,7 +113,6 @@ def fetch_lyrics():
 
         time.sleep(SLEEP_TIME)
 
-    # ===== LƯU FILE CSV =====
     os.makedirs(os.path.dirname(OUTPUT_FILE), exist_ok=True)
 
     with open(OUTPUT_FILE, "w", newline="", encoding="utf-8-sig") as f:
