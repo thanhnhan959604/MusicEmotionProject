@@ -3,14 +3,12 @@ import csv
 import time
 import pandas as pd
 import lyricsgenius
+from tqdm import tqdm
 
-
-# ===== CONFIG =====
-GENIUS_TOKEN = "XV3VmrcJ5XpX3m36vaGrdAxxbcl7xhw6i1C2HJowheEUYU0X2o84yXhsb1HkIuvl"
-METADATA_FILE = "data/metadata/audio_metadata.csv"
-OUTPUT_FILE = "data/lyrics/genius_lyrics.csv"
-SLEEP_TIME = 2
-
+GENIUS_TOKEN = "3q2A-FV8YbfekbkJ_Tlly5gMUJhGkpm0AMJ6RS6-rH5ByONI5fL-j03ut_NZ4M2O"
+METADATA_FILE = r"data\metadata\splits\audio_metadata_part_6.csv"
+OUTPUT_FILE = "data/lyrics/genius_lyrics_6.csv"
+SLEEP_TIME = 3
 
 def load_metadata():
     if not os.path.exists(METADATA_FILE):
@@ -18,25 +16,8 @@ def load_metadata():
         return None
 
     df = pd.read_csv(METADATA_FILE, encoding="utf-8-sig")
-
     df["TRACK_ID"] = df["TRACK_ID"].astype(str)
-
-    # ===== FIX YEAR FLOAT -> INT STRING =====
-    clean_years = []
-
-    for y in df["YEAR"]:
-        if pd.notnull(y):
-            try:
-                clean_years.append(str(int(float(y))))
-            except:
-                clean_years.append("")
-        else:
-            clean_years.append("")
-
-    df["YEAR"] = clean_years
-
     return df
-
 
 def create_client():
     genius = lyricsgenius.Genius(
@@ -45,35 +26,29 @@ def create_client():
         sleep_time=1,
         retries=3
     )
-
     genius.verbose = True
     genius.remove_section_headers = True
     genius.skip_non_songs = True
     genius.excluded_terms = ["(Remix)", "(Live)"]
-
     return genius
 
-
 def extract_year_from_song(song):
+    """
+    Lấy năm từ release_date_components trong JSON gốc
+    """
     try:
         if hasattr(song, "_body"):
             body = song._body
-
             if "release_date_components" in body:
                 comp = body["release_date_components"]
-
                 if comp and "year" in comp and comp["year"]:
-                    return int(comp["year"])
-
-    except:
+                    return str(comp["year"])
+    except Exception:
         return None
-
     return None
 
-
 def fetch_lyrics():
-
-    print("===== FETCH LYRICS FROM GENIUS =====")
+    print("===== TẢI LỜI BÀI HÁT TỪ GENIUS =====")
 
     df_meta = load_metadata()
     if df_meta is None:
@@ -85,16 +60,15 @@ def fetch_lyrics():
     success = 0
     fail = 0
 
-    for _, row in df_meta.iterrows():
-
-        track_id = row["TRACK_ID"]
+    for _, row in tqdm(df_meta.iterrows(), total=len(df_meta), desc="Processing"):
+        track_id = str(row["TRACK_ID"])
         title = str(row["TITLE"]).strip()
         artist = str(row["ARTIST"]).strip()
-        metadata_year = row["YEAR"]  # đã clean ở load
+        metadata_year = str(row["YEAR"]).strip()
 
-        print("Đang xử lý:", track_id)
+        print("\nĐang xử lý:", track_id)
 
-        if not title or not artist:
+        if not title or not artist or title == 'nan' or artist == 'nan':
             fail += 1
             continue
 
@@ -114,20 +88,20 @@ def fetch_lyrics():
 
             genius_year = extract_year_from_song(song)
 
-            # ===== SO SÁNH NĂM DẠNG INT =====
             if metadata_year and genius_year:
-
-                if int(metadata_year) != genius_year:
-                    print("Không khớp năm:", metadata_year, "vs", genius_year)
+                if metadata_year not in genius_year:
+                    print(f"Không khớp năm: {metadata_year} vs {genius_year}")
                     fail += 1
                     continue
 
+            lyric_clean = lyric.strip().replace("\r\n", " \\n ").replace("\n", " \\n ").replace("\r", " ")
+            
             rows.append({
                 "TRACK_ID": track_id,
                 "TITLE": title,
                 "ARTIST": artist,
                 "YEAR": metadata_year,
-                "LYRIC": lyric.strip()
+                "LYRIC": lyric_clean
             })
 
             success += 1
@@ -139,8 +113,7 @@ def fetch_lyrics():
 
         time.sleep(SLEEP_TIME)
 
-    # ===== SAVE FILE =====
-    os.makedirs("data/lyrics", exist_ok=True)
+    os.makedirs(os.path.dirname(OUTPUT_FILE), exist_ok=True)
 
     with open(OUTPUT_FILE, "w", newline="", encoding="utf-8-sig") as f:
         fieldnames = ["TRACK_ID", "TITLE", "ARTIST", "YEAR", "LYRIC"]
@@ -148,10 +121,9 @@ def fetch_lyrics():
         writer.writeheader()
         writer.writerows(rows)
 
-    print("\nHoàn tất")
+    print("\n===== HOÀN TẤT =====")
     print("Thành công:", success)
     print("Thất bại:", fail)
-
 
 if __name__ == "__main__":
     fetch_lyrics()
