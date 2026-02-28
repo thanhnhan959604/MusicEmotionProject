@@ -5,10 +5,13 @@ import pandas as pd
 import lyricsgenius
 from tqdm import tqdm
 
-GENIUS_TOKEN = "3q2A-FV8YbfekbkJ_Tlly5gMUJhGkpm0AMJ6RS6-rH5ByONI5fL-j03ut_NZ4M2O"
-METADATA_FILE = r"data\metadata\splits\audio_metadata_part_6.csv"
-OUTPUT_FILE = "data/lyrics/genius_lyrics_6.csv"
-SLEEP_TIME = 3
+
+# ===== CẤU HÌNH (CONFIG) =====
+GENIUS_TOKEN = "_8c82WX9Uv7LkurXwTdiJSCWX1m0U8g_3Kv-BeBYI24T0etcTzsbZbkLH5EspZ7A"
+METADATA_FILE = r"D:\KY_6\DA2\MusicEmotionProject\data\metadata\splits\audio_metadata_part_5.csv"
+OUTPUT_FILE = "data/lyrics/genius_lyrics_5.csv"
+SLEEP_TIME = 2
+
 
 def load_metadata():
     if not os.path.exists(METADATA_FILE):
