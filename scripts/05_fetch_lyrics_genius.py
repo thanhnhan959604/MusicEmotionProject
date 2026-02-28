@@ -6,9 +6,9 @@ import lyricsgenius
 from tqdm import tqdm
 
 # ===== CẤU HÌNH (CONFIG) =====
-GENIUS_TOKEN = "FL-n454ZIpvBOZuUFDOY5t40U0Kp6DKCHnpwo0y1sWNythe870GQ-Furh6SEK8LB"
-METADATA_FILE = r"D:\KY_6\DA2\MusicEmotionProject\data\metadata\splits\audio_metadata_part_1.csv"
-OUTPUT_FILE = "data/lyrics/genius_lyrics_1.csv"
+GENIUS_TOKEN = "_8c82WX9Uv7LkurXwTdiJSCWX1m0U8g_3Kv-BeBYI24T0etcTzsbZbkLH5EspZ7A"
+METADATA_FILE = r"D:\KY_6\DA2\MusicEmotionProject\data\metadata\splits\audio_metadata_part_5.csv"
+OUTPUT_FILE = "data/lyrics/genius_lyrics_5.csv"
 SLEEP_TIME = 2
 
 def load_metadata():
