@@ -1,8 +1,8 @@
 import pandas as pd
 
-tag_path = "../MLP/model/data/data/mood_tag.txt"
-tsv_path = "../MLP/model/data/data/autotagging_moodtheme.tsv"
-felter_csv_path = "../MLP/model/data/data/filter_mood.csv"
+tag_path = "../data/raw/mood_tag.txt"
+tsv_path = "../data/raw/autotagging_moodtheme.tsv"
+felter_csv_path = "../data/intermediate/mood_filtered_dataset.csv"
 
 df_tag = pd.read_csv(tag_path, header=None)
 mood_list = []
@@ -31,10 +31,3 @@ for _, row in df_split.iterrows():
 
 df_out = pd.DataFrame(rows, columns=["TRACK_ID", "ARTIST_ID", "ALBUM_ID", "PATH", "DURATION", "TAGS"])
 df_out.to_csv(felter_csv_path, index=False)
-
-
-
-
-
-
-

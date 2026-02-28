@@ -4,19 +4,15 @@ from mutagen.mp3 import MP3
 from mutagen.easyid3 import EasyID3
 from mutagen.id3 import ID3NoHeaderError
 
-
 AUDIO_FOLDER = "data/raw/audio"
 OUTPUT_FILE = "data/metadata/audio_metadata.csv"
 
-
-#Kiểm tra thư mục
 def check_audio_folder_exists():
     if not os.path.exists(AUDIO_FOLDER):
         print("[-] Thư mục audio không tồn tại: ", AUDIO_FOLDER)
         return False
     return True
 
-#lấy danh sách file mp3 trong thư mục audio
 def get_mp3_files():
     mp3_files = []
     files = os.listdir(AUDIO_FOLDER)
@@ -25,7 +21,6 @@ def get_mp3_files():
             mp3_files.append(file_name)
     return mp3_files
 
-#đọc metadata
 def extract_metadata_from_file(file_path):
     title = ""
     artist = ""
@@ -36,12 +31,10 @@ def extract_metadata_from_file(file_path):
     bitrate = ""
 
     try:
-        #lấy thông tin
         audio = MP3(file_path)
         duration = str(int(audio.info.length))
         bitrate = str(int(audio.info.bitrate / 1000)) + "kbps"
 
-        #đọc ID3 tag
         try:
             tags = EasyID3(file_path)
 
@@ -62,7 +55,6 @@ def extract_metadata_from_file(file_path):
 
     return title, artist, album, year, genre, duration, bitrate
 
-#tạo file csv
 def create_metadata_csv():
     print("BẮT ĐẦU TRÍCH XUẤT METADATA")
 
@@ -97,10 +89,8 @@ def create_metadata_csv():
         }
         rows.append(row)
     
-    #tạo thư mục metadata nếu chưa có
     os.makedirs("data/metadata", exist_ok=True)
 
-    #ghi CSV
     with open(OUTPUT_FILE, mode="w", newline="", encoding="utf-8-sig") as f:
         fieldnames = [
             "TRACK_ID",
@@ -123,5 +113,3 @@ def create_metadata_csv():
 
 if __name__ == "__main__":
     create_metadata_csv()
-
-#chạy trên python 3.10
