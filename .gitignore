@@ -1,0 +1,15 @@
+#bỏ qua thông tin về API key
+.env
+
+#bỏ qua dữ liệu nặng
+data/
+cache/
+logs/
+models/checkpoints/
+
+#bỏ qua file rác của python
+__pycache__/
+*.pyc
+
+#bỏ qua môi trường ảo
+venv/
