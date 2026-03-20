@@ -13,3 +13,6 @@ __pycache__/
 
 #bỏ qua môi trường ảo
 venv/
+
+#bỏ qua giai đoạn test code
+tests/
