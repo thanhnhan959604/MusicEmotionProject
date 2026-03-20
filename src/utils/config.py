@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 
 #lớp này chứa toàn bộ đường dẫn và cẩu hình của dự á
-class PiplineConfig:
+class PipelineConfig:
     
     #lấy đường dẫn gốc
     ROOT_DIR = Path(__file__).resolve().parent.parent.parent
