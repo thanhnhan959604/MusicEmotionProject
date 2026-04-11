@@ -24,6 +24,7 @@ class PipelineConfig:
     # step01: crawl IDs
     TRACK_IDS_FILE = CACHE_DIR/"track_ids.txt"
     CRAWLED_ARTISTS_FILE = CACHE_DIR/"crawled_artists.txt"
+    CRAWLED_TRACKS_CSV = DATA_DIR / "step1_tracks.csv"
 
     # step02: fetch metadata & audio features
     RAW_METADATA_FILE = DATA_DIR / "step2_raw_metadata.csv"
