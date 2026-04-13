@@ -84,7 +84,7 @@ def main():
         if artist in crawled_keywords:
             continue
 
-        logger.info(f"🔍 Đang tìm: '{artist}'")
+        logger.info(f"Đang tìm: '{artist}'")
         api_failed = False
 
         # 3 trang × 50 bài = tối đa 150 bài / keyword

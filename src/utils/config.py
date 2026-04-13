@@ -24,7 +24,7 @@ class PipelineConfig:
     # step01: crawl IDs
     TRACK_IDS_FILE = CACHE_DIR/"track_ids.txt"
     CRAWLED_ARTISTS_FILE = CACHE_DIR/"crawled_artists.txt"
-    CRAWLED_TRACKS_CSV = DATA_DIR / "step1_tracks.csv"
+    CRAWLED_TRACKS_CSV = DATA_DIR/"step1_tracks.csv"
 
     # step02: fetch metadata & audio features
     RAW_METADATA_FILE = DATA_DIR / "step2_raw_metadata.csv"
@@ -36,6 +36,47 @@ class PipelineConfig:
     # step04: lyrics & filter Vietnamese
     LYRICS_RAW_FILE = DATA_DIR / "step4_lyrics_raw.csv"
     VIETNAMESE_ONLY_FILE = DATA_DIR / "step4_vietnamese_only.csv"
+    LIENKHUC_NAME_KEYWORDS = [
+    # 1. Nhóm Liên khúc, Ghép bài (Medley / Mashup)
+    "liên khúc", "lien khuc", 
+    "mashup", "mash up", "mash-up",
+    "medley",
+    
+    # Lọc viết tắt chữ Liên khúc (có khoảng trắng để tránh lọc nhầm tên Rapper LK)
+    "lk ", " lk", "[lk]", "(lk)", "lk.", "lk-",
+
+    # 2. Nhóm Nhạc sàn / DJ Set / Mix dài
+    "nonstop", "non-stop", "non stop",
+    "megamix", "mega mix",
+    "mixtape", "mix tape",
+    "live set", "dj set", "djset",
+    "vietmix", "viet mix", "club mix",
+    "vina house nonstop", "vinahouse nonstop",
+    " mix ", # Giữ khoảng trắng để không bị lọc nhầm chữ "remix" của 1 bài đơn lẻ
+    
+    # 3. Nhóm Tuyển tập, Tổng hợp (Compilation)
+    "tuyển tập", "tuyen tap",
+    "tổng hợp", "tong hop",
+    "chọn lọc", "chon loc",
+    "the best of", "best of",
+    "greatest hits", "collection",
+    
+    # 4. Nhóm cụm từ thường dùng gom nhiều bài hát
+    "những bài hát", "nhung bai hat",
+    "những ca khúc", "nhung ca khuc",
+    "ca khúc hay nhất", "ca khuc hay nhat",
+    "tuyệt phẩm", "tuyet pham",
+    "đỉnh cao", "dinh cao", # VD: Đỉnh cao nhạc vàng
+    "để đời", "de doi",     # VD: Những ca khúc để đời
+    
+    # 5. Nhóm Nguyên Album/CD up thành 1 track dài
+    "full album", "album full",
+    "trọn bộ", "tron bo",
+    "cd1", "cd 1", "cd2", "cd 2", "full cd",
+    
+    # 6. Nhóm nhạc sống / kẹo kéo (thường là liên khúc hát rong)
+    "nhạc sống", "nhac song",
+    "kẹo kéo", "keo keo"]
 
     # step05: master dataset (merge)
     MASTER_DATASET_FILE = DATA_DIR / "step5_master_dataset.csv"
@@ -45,7 +86,8 @@ class PipelineConfig:
 
     # step07: train-ready dataset
     TRAIN_READY_FILE = DATA_DIR / "step7_train_ready.csv"
-    
+    QUARANTINE_AUDIO_DIR = DATA_DIR / "step7_quarantine_audio"
+    QUARANTINE_CSV = DATA_DIR / "step7_quarantine_csv.csv"
     # DANH SÁCH ~200 NGHỆ SĨ & TỪ KHÓA NHẠC VIỆT
 
     SEED_KEYWORDS = [

@@ -21,15 +21,25 @@ AUDIO_FEATURE_COLS = [
 
 # helper chung
 def load_track_ids():
-
-    if not os.path.exists(PipelineConfig.TRACK_IDS_FILE):
+    csv_file = PipelineConfig.CRAWLED_TRACKS_CSV
+    
+    if not os.path.exists(csv_file):
         raise FileNotFoundError(
-            f"Không tìm thấy '{PipelineConfig.TRACK_IDS_FILE}'. "
+            f"Không tìm thấy '{csv_file}'. "
             "Hãy chạy `step01_crawl_ids.py` trước."
         )
     
-    with open(PipelineConfig.TRACK_IDS_FILE, "r", encoding="utf-8") as f:
-        return {line.strip() for line in f if line.strip()}
+    try:
+        # Dùng pandas đọc file CSV, chỉ load đúng cột 'Spotify_ID' để tiết kiệm RAM
+        df = pd.read_csv(csv_file, usecols=["Spotify_ID"])
+        
+        # Chuyển thành dạng chuỗi, xóa khoảng trắng thừa và đưa vào một set (tập hợp không trùng lặp)
+        track_ids = set(df["Spotify_ID"].astype(str).str.strip().tolist())
+        
+        return track_ids
+        
+    except Exception as e:
+        raise RuntimeError(f"Lỗi khi đọc file CSV '{csv_file}': {e}")
     
 def load_fetched_ids(output_file, id_col):
 
