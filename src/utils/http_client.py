@@ -41,7 +41,7 @@ class Spotify81Client:
                     
                 #nếu sai key hoặc đạt limit của API
                 elif response.status_code == 403:
-                    print("[LOI] Lỗi API ({response.status_code}): {response.text}")
+                    print(f"[LOI] Lỗi API ({response.status_code}): {response.text}")
                     break
             
             except requests.exceptions.RequestException as e:

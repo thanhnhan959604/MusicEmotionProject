@@ -1,25 +1,3 @@
-"""
-step_03_clean_and_dedup.py
---------------------------
-Pipeline Step 3: Lam sach & xoa trung.
-
-Dau vao : PipelineConfig.RAW_METADATA_FILE   (step2_raw_metadata.csv)
-          PipelineConfig.AUDIO_FEATURES_FILE (step2_audio_features.csv)
-Dau ra  : PipelineConfig.CLEANED_DATA_FILE   (step3_cleaned.csv)
-
-Nhiem vu duy nhat cua buoc nay (theo pipeline):
-  1. Merge metadata + audio features theo Spotify_ID
-  2. Xoa ban ghi null (thieu ID hoac ten bai)
-  3. Xoa trung lap theo Spotify_ID
-  4. Xoa trung lap theo (ten bai + nghe si) case-insensitive
-  5. Chuan hoa ten cot + chat loc cot dau ra
-  6. Luu file
-
-Khong lam o buoc nay:
-  - Khong loc nhac ngoai  -> Step 4 xu ly (langdetect tren lyrics)
-  - Khong parse/filter gi them -> giu data toi da cho Step 4
-"""
-
 import os
 import re
 import ast
@@ -30,9 +8,7 @@ from src.utils.config import PipelineConfig
 from src.utils.logger import get_logger
 
 
-# ---------------------------------------------------------------------------
 # Hang so
-# ---------------------------------------------------------------------------
 
 # 13 dac trung am thanh dong bo voi Step 2
 AUDIO_FEATURE_COLS = [
@@ -42,19 +18,9 @@ AUDIO_FEATURE_COLS = [
 ]
 
 
-# ---------------------------------------------------------------------------
 # Helpers
-# ---------------------------------------------------------------------------
 
 def parse_artists(raw):
-    """
-    Chuyen cot 'artists' tu chuoi JSON-like ve ten ca si thuan.
-
-    Ho tro 2 dang API tra ve:
-      - list of dict co key 'name' : "[{'name': 'A'}, {'name': 'B'}]"
-      - list of string             : "['A', 'B']"
-    Fallback: tra ve chuoi goc da strip neu khong parse duoc.
-    """
     if not isinstance(raw, str) or not raw.strip():
         return ""
 
@@ -79,7 +45,6 @@ def parse_artists(raw):
 
 
 def load_csv(filepath, label, logger):
-    """Doc CSV voi xu ly loi ro rang."""
     if not os.path.exists(filepath):
         raise FileNotFoundError(
             f"Khong tim thay '{filepath}'. "
@@ -101,18 +66,9 @@ def safe_makedirs(filepath):
         os.makedirs(dirpath, exist_ok=True)
 
 
-# ---------------------------------------------------------------------------
 # Cac buoc xu ly chinh
-# ---------------------------------------------------------------------------
 
 def step_merge(df_meta, df_feat, logger):
-    """
-    Ghep metadata voi audio features theo Spotify_ID.
-
-    - Metadata: cot 'id' (do json_normalize sinh ra tu Step 2)
-    - Features: cot 'Spotify_ID' (da chuan hoa tu Step 2)
-    - Dung left-join de giu toan bo metadata, features nao khong co thi de null
-    """
     # Chuan hoa ten cot khoa
     if "id" in df_meta.columns:
         df_meta = df_meta.rename(columns={"id": "Spotify_ID"})
@@ -137,11 +93,6 @@ def step_merge(df_meta, df_feat, logger):
 
 
 def step_drop_null(df, logger):
-    """
-    Xoa ban ghi thieu thong tin bat buoc:
-      - Spotify_ID null, chuoi 'nan', hoac toan khoang trang
-      - Ten bai (cot 'name' hoac 'Track_Name') null
-    """
     before = len(df)
 
     name_col = next((c for c in ["name", "Track_Name"] if c in df.columns), None)
@@ -160,7 +111,6 @@ def step_drop_null(df, logger):
 
 
 def step_dedup_id(df, logger):
-    """Xoa trung lap theo Spotify_ID, giu lan xuat hien dau tien."""
     before = len(df)
     df = df.drop_duplicates(subset=["Spotify_ID"], keep="first")
     logger.info(
@@ -171,10 +121,6 @@ def step_dedup_id(df, logger):
 
 
 def step_parse_artists(df, logger):
-    """
-    Parse cot artists tho thanh chuoi ten phan cach boi dau phay.
-    Can thiet truoc step_dedup_name de so sanh dung ten nghe si.
-    """
     raw_col = next((c for c in ["artists", "Artist"] if c in df.columns), None)
 
     if raw_col is None:
@@ -194,11 +140,6 @@ def step_parse_artists(df, logger):
 
 
 def step_dedup_name(df, logger):
-    """
-    Xoa trung lap theo cap (ten bai + nghe si),
-    khong phan biet hoa/thuong va khoang trang.
-    Giu ban ghi xuat hien dau tien.
-    """
     before = len(df)
 
     name_col = next((c for c in ["name", "Track_Name"] if c in df.columns), None)
@@ -220,13 +161,6 @@ def step_dedup_name(df, logger):
 
 
 def step_select_and_rename(df, logger):
-    """
-    Chuan hoa ten cot va chat loc nhung cot can thiet cho Step 4.
-
-    Cot dau ra:
-        Spotify_ID, Track_Name, Artist, Popularity, Duration_MS,
-        Preview_Audio_URL, Release_Date + 13 audio features (neu co)
-    """
     rename_map = {
         "name"               : "Track_Name",
         "popularity"         : "Popularity",
@@ -260,10 +194,7 @@ def step_select_and_rename(df, logger):
     )
     return df
 
-
-# ---------------------------------------------------------------------------
 # Entry point
-# ---------------------------------------------------------------------------
 
 def main():
 

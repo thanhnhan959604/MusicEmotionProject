@@ -20,9 +20,7 @@ MAX_RETRIES = 3
 
 ENDPOINT_LYRICS = "/track_lyrics_batch"
 
-# ======================================================
 # TỪ KHOÁ NHẬN DIỆN LIÊN KHÚC
-# ======================================================
 # Từ khoá trong TÊN BÀI — chỉ cần xuất hiện là loại
 LIENKHUC_NAME_KEYWORDS = PipelineConfig.LIENKHUC_NAME_KEYWORDS
 
@@ -35,14 +33,6 @@ LIENKHUC_LYRICS_TITLE_PATTERN = re.compile(
 
 
 def is_lienkhuc(track_name: str, lyrics: str) -> bool:
-    """
-    Trả về True nếu bài hát bị coi là liên khúc / mashup / nonstop.
-
-    Kiểm tra 3 tầng:
-      1. Tên bài chứa từ khóa liên khúc.
-      2. Lyrics có ≥ 3 dòng tiêu đề bài (dạng [Tên bài] hoặc (Tên bài)).
-      3. Lyrics quá dài bất thường (> 6 000 ký tự) — dấu hiệu ghép nhiều bài.
-    """
     name_lower = str(track_name).lower().strip()
 
     # Tầng 1: tên bài
@@ -64,10 +54,7 @@ def is_lienkhuc(track_name: str, lyrics: str) -> bool:
 
     return False
 
-
-# ======================================================
 # HELPERS - ĐỌC / GHI
-# ======================================================
 def load_input_ids(input_file, logger):
     if not os.path.exists(input_file):
         raise FileNotFoundError(
@@ -125,9 +112,7 @@ def append_to_csv(df, output_file):
     )
 
 
-# ======================================================
 # PHA A — TẢI LYRICS
-# ======================================================
 def extract_single_lyric(item):
     track_id = item.get("id")
     clean_text = "No Lyrics"
@@ -230,9 +215,7 @@ def phase_a_fetch_lyrics(client, all_ids, output_file, logger):
     logger.info(f"[PHA A] File lưu tại: {output_file}")
 
 
-# ======================================================
 # PHA B — LỌC TIẾNG VIỆT + LIÊN KHÚC
-# ======================================================
 def detect_language(text):
     try:
         sample = str(text)[:300].strip()
@@ -277,7 +260,7 @@ def phase_b_filter_vietnamese(
     # Chuẩn hoá
     df["Lyrics"] = df["Lyrics"].fillna("No Lyrics")
 
-    # --- Tầng 1: Lọc liên khúc ---
+    # Tầng 1: Lọc liên khúc
     logger.info("[lienkhuc] Đang phát hiện liên khúc / mashup / nonstop...")
 
     name_series = df[track_name_col] if track_name_col else pd.Series([""] * len(df))
@@ -293,7 +276,7 @@ def phase_b_filter_vietnamese(
         f"Còn lại: {len(df):,} bài."
     )
 
-    # --- Tầng 2: Lọc tiếng Việt ---
+    # Tầng 2: Lọc tiếng Việt
     mask_has_lyrics = (
         df["Lyrics"].astype(str).str.strip().ne("No Lyrics")
         & df["Lyrics"].astype(str).str.strip().ne("")
@@ -316,7 +299,7 @@ def phase_b_filter_vietnamese(
     cols_to_drop = [c for c in ["Language", "Track_Name"] if c in df_vi.columns]
     df_vi = df_vi.drop(columns=cols_to_drop)
 
-    # --- Lưu kết quả ---
+    # Lưu kết quả
     safe_makedirs(output_vi_file)
     df_vi.to_csv(output_vi_file, index=False, encoding="utf-8-sig")
     logger.info(f"[PHA B] Thuần Việt : {len(df_vi):,} bài -> '{output_vi_file}'")
@@ -344,10 +327,7 @@ def phase_b_filter_vietnamese(
 
     return len(df_vi)
 
-
-# ======================================================
 # ENTRY POINT
-# ======================================================
 def main():
     logger = get_logger("Step04_LyricsAndFilterVI", "step4.log")
     client = Spotify81Client()

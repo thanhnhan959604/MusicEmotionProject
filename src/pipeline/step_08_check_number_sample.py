@@ -1,16 +1,3 @@
-"""
-step_08_check_distribution.py
------------------------------
-Pipeline Step 8: Kiểm tra phân phối dữ liệu (Data Distribution).
-
-Đầu vào : PipelineConfig.TRAIN_READY_FILE (step7_train_ready.csv)
-Nhiệm vụ:
-  1. Đọc tập dữ liệu TRAIN-READY cuối cùng.
-  2. Phân loại 4 nhãn cảm xúc dựa trên ngưỡng 0.5 của Valence và Energy.
-  3. Thống kê số lượng, tỷ lệ phần trăm của từng nhãn.
-  4. Cảnh báo tự động nếu phát hiện mất cân bằng dữ liệu nghiêm trọng.
-"""
-
 import os
 import pandas as pd
 from src.utils.config import PipelineConfig
@@ -25,7 +12,6 @@ QUAD_NAMES = {
 }
 
 def load_dataset(filepath, logger):
-    """Đọc file CSV an toàn."""
     if not os.path.exists(filepath):
         raise FileNotFoundError(
             f"Không tìm thấy '{filepath}'. "
@@ -37,7 +23,6 @@ def load_dataset(filepath, logger):
     return df
 
 def analyze_distribution(df, logger):
-    """Phân loại cảm xúc và vẽ biểu đồ text vào log."""
     if 'valence' not in df.columns or 'energy' not in df.columns:
         raise ValueError("[!] Dataset thiếu cột 'valence' hoặc 'energy' để phân loại.")
 

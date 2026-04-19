@@ -8,9 +8,8 @@ from src.utils.http_client import Spotify81Client
 SEED_KEYWORDS = PipelineConfig.SEED_KEYWORDS
 
 
-# ======================================================
 # HELPERS - ĐỌC / GHI CACHE
-# ======================================================
+
 def load_cache(logger):
     """Phục hồi tiến trình từ lần chạy trước."""
     unique_track_ids = set()
@@ -61,9 +60,8 @@ def save_batch(batch_data, unique_track_ids, logger):
     )
 
 
-# ======================================================
 # LOGIC CHÍNH
-# ======================================================
+
 def main():
     logger = get_logger("Step01_CrawlIDs", "step1.log")
     client = Spotify81Client()
