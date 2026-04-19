@@ -60,7 +60,6 @@ def load_csv(filepath, label, logger):
 
 
 def safe_makedirs(filepath):
-    """Tao thu muc cha cua filepath neu chua ton tai."""
     dirpath = os.path.dirname(filepath)
     if dirpath:
         os.makedirs(dirpath, exist_ok=True)
@@ -230,9 +229,9 @@ def main():
 
     logger.info("=" * 55)
     logger.info("[THANH CONG] HOAN TAT BUOC 3")
-    logger.info(f"[-] Tong bai hat     : {len(df):,}")
-    logger.info(f"[-] So cot           : {len(df.columns)}")
-    logger.info(f"[-] File luu tai     : {out_file}")
+    logger.info(f"[-] Tong bai hat : {len(df):,}")
+    logger.info(f"[-] So cot : {len(df.columns)}")
+    logger.info(f"[-] File luu tai : {out_file}")
     logger.info("=" * 55)
 
 

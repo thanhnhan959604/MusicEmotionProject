@@ -183,9 +183,9 @@ def phase_a_fetch_lyrics(client, all_ids, output_file, logger):
     ids_to_fetch = [tid for tid in all_ids if tid not in fetched_ids]
 
     logger.info("PHA A - TẢI LYRICS")
-    logger.info(f"[-] Tổng IDs      : {len(all_ids):,}")
+    logger.info(f"[-] Tổng IDs: {len(all_ids):,}")
     logger.info(f"[-] Đã có (resume): {len(fetched_ids):,}")
-    logger.info(f"[-] Cần tải thêm  : {len(ids_to_fetch):,}")
+    logger.info(f"[-] Cần tải thêm: {len(ids_to_fetch):,}")
 
     if not ids_to_fetch:
         logger.info("[PHA A] Đã hoàn tất trước đó. Bỏ qua.")
@@ -332,20 +332,20 @@ def main():
     logger = get_logger("Step04_LyricsAndFilterVI", "step4.log")
     client = Spotify81Client()
 
-    input_file       = str(PipelineConfig.CLEANED_DATA_FILE)
-    lyrics_raw_file  = str(PipelineConfig.LYRICS_RAW_FILE)
-    output_vi_file   = str(PipelineConfig.VIETNAMESE_ONLY_FILE)
+    input_file = str(PipelineConfig.CLEANED_DATA_FILE)
+    lyrics_raw_file = str(PipelineConfig.LYRICS_RAW_FILE)
+    output_vi_file = str(PipelineConfig.VIETNAMESE_ONLY_FILE)
     log_foreign_file = str(PipelineConfig.DATA_DIR / "step4_removed_foreign.csv")
     log_lienkhuc_file = str(PipelineConfig.DATA_DIR / "step4_removed_lienkhuc.csv")  # log mới
 
     logger.info("=" * 55)
     logger.info("BƯỚC 4: TẢI LYRICS & LỌC TIẾNG VIỆT + LIÊN KHÚC")
     logger.info("=" * 55)
-    logger.info(f"[-] Đầu vào (Bước 3)   : {input_file}")
-    logger.info(f"[-] Lyrics thô         : {lyrics_raw_file}")
-    logger.info(f"[-] Lyrics thuần Việt  : {output_vi_file}")
-    logger.info(f"[-] Log ngoại ngữ      : {log_foreign_file}")
-    logger.info(f"[-] Log liên khúc      : {log_lienkhuc_file}")
+    logger.info(f"[-] Đầu vào (Bước 3): {input_file}")
+    logger.info(f"[-] Lyrics thô: {lyrics_raw_file}")
+    logger.info(f"[-] Lyrics thuần Việt: {output_vi_file}")
+    logger.info(f"[-] Log ngoại ngữ: {log_foreign_file}")
+    logger.info(f"[-] Log liên khúc: {log_lienkhuc_file}")
     logger.info("=" * 55)
 
     all_ids = load_input_ids(input_file, logger)

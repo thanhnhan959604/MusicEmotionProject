@@ -140,8 +140,8 @@ def step_validate_completeness(df, audio_dir, quarantine_audio_dir, quarantine_c
 
     # một dòng chỉ cần 1 ô NaN là bị loại
     mask_invalid = df.isna().any(axis=1)
-    df_invalid   = df[mask_invalid].copy()
-    df_valid     = df[~mask_invalid].copy()
+    df_invalid = df[mask_invalid].copy()
+    df_valid = df[~mask_invalid].copy()
 
     removed = before - len(df_valid)
 
@@ -260,12 +260,12 @@ def log_summary(df, out_file, logger):
 def main():
     logger = get_logger("Step07_SyncAndTrainReady", "step7.log")
 
-    master_file          = str(PipelineConfig.MASTER_DATASET_FILE)
-    audio_dir            = str(PipelineConfig.AUDIO_DIR)
-    out_file             = str(PipelineConfig.TRAIN_READY_FILE)
-    log_dir              = str(PipelineConfig.DATA_DIR)
+    master_file = str(PipelineConfig.MASTER_DATASET_FILE)
+    audio_dir = str(PipelineConfig.AUDIO_DIR)
+    out_file = str(PipelineConfig.TRAIN_READY_FILE)
+    log_dir = str(PipelineConfig.DATA_DIR)
     quarantine_audio_dir = str(PipelineConfig.QUARANTINE_AUDIO_DIR)
-    quarantine_csv       = str(PipelineConfig.QUARANTINE_CSV)
+    quarantine_csv = str(PipelineConfig.QUARANTINE_CSV)
 
     logger.info("=" * 55)
     logger.info("BUOC 7: ĐỒNG BỘ AUDIO -> TRAIN READY")

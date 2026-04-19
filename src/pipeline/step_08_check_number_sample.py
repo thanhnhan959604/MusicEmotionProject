@@ -28,7 +28,7 @@ def analyze_distribution(df, logger):
 
     # Đảm bảo kiểu dữ liệu là số
     df['valence'] = pd.to_numeric(df['valence'], errors='coerce')
-    df['energy']  = pd.to_numeric(df['energy'], errors='coerce')
+    df['energy'] = pd.to_numeric(df['energy'], errors='coerce')
 
     # Dọn dẹp nếu có dòng bị thiếu feature
     before = len(df)

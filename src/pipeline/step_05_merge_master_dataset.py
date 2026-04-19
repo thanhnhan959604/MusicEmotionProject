@@ -64,10 +64,10 @@ def normalize_id_col(df):
 
 def step_validate_inputs(df_meta, df_lyrics, logger):
     # kiểm tra cấu trúc trước khi gộp.
-    required_meta   = {"Spotify_ID", "Track_Name", "Artist"}
+    required_meta = {"Spotify_ID", "Track_Name", "Artist"}
     required_lyrics = {"Spotify_ID", "Lyrics"}
 
-    missing_meta   = required_meta   - set(df_meta.columns)
+    missing_meta = required_meta   - set(df_meta.columns)
     missing_lyrics = required_lyrics - set(df_lyrics.columns)
 
     if missing_meta:
@@ -86,13 +86,13 @@ def step_validate_inputs(df_meta, df_lyrics, logger):
 
 def step_dedup_inputs(df_meta, df_lyrics, logger):
     # xoá trùng ID trong từng file trước khi gộp.
-    before_meta   = len(df_meta)
+    before_meta = len(df_meta)
     before_lyrics = len(df_lyrics)
 
     df_meta   = df_meta.drop_duplicates(subset=["Spotify_ID"], keep="first")
     df_lyrics = df_lyrics.drop_duplicates(subset=["Spotify_ID"], keep="first")
 
-    dropped_meta   = before_meta   - len(df_meta)
+    dropped_meta = before_meta   - len(df_meta)
     dropped_lyrics = before_lyrics - len(df_lyrics)
 
     logger.info(
@@ -108,7 +108,7 @@ def step_dedup_inputs(df_meta, df_lyrics, logger):
 
 def step_merge(df_meta, df_lyrics, logger):
     # dùng inner-join để kết hợp metadata + lyrics (step_03 + step_04).
-    n_meta   = len(df_meta)
+    n_meta = len(df_meta)
     n_lyrics = len(df_lyrics)
 
     df = pd.merge(df_meta, df_lyrics, on="Spotify_ID", how="inner")
@@ -119,8 +119,8 @@ def step_merge(df_meta, df_lyrics, logger):
     )
 
     # tính chính xác số bài bị loại bằng set difference
-    merged_ids     = set(df["Spotify_ID"])
-    only_in_meta   = len(set(df_meta["Spotify_ID"])   - merged_ids)
+    merged_ids = set(df["Spotify_ID"])
+    only_in_meta = len(set(df_meta["Spotify_ID"])   - merged_ids)
     only_in_lyrics = len(set(df_lyrics["Spotify_ID"]) - merged_ids)
 
     logger.info(
@@ -198,7 +198,7 @@ def step_final_dedup(df, logger):
         logger.warning("[final_dedup] Không có cột Track_Name / Artist. Bỏ qua bước này.")
         return df
 
-    df["_tmp_name"]   = df["Track_Name"].astype(str).str.lower().str.strip()
+    df["_tmp_name"] = df["Track_Name"].astype(str).str.lower().str.strip()
     df["_tmp_artist"] = df["Artist"].astype(str).str.lower().str.strip()
     df = df.drop_duplicates(subset=["_tmp_name", "_tmp_artist"], keep="first")
     df = df.drop(columns=["_tmp_name", "_tmp_artist"])
@@ -213,8 +213,8 @@ def step_final_dedup(df, logger):
 def step_reorder_columns(df, logger):
     # sắp xếp các cột theo đúng thứ tự: ưu tiên -> audio features -> còn lại.
     existing_priority = [c for c in PRIORITY_COLS      if c in df.columns]
-    audio_features    = [c for c in AUDIO_FEATURE_COLS if c in df.columns]
-    remainder         = [
+    audio_features = [c for c in AUDIO_FEATURE_COLS if c in df.columns]
+    remainder = [
         c for c in df.columns
         if c not in existing_priority and c not in audio_features
     ]
@@ -233,15 +233,15 @@ def step_reorder_columns(df, logger):
 
 def log_summary(df, out_file, logger):
     audio_present = [c for c in AUDIO_FEATURE_COLS if c in df.columns]
-    has_preview   = int(df["Preview_Audio_URL"].notna().sum()) if "Preview_Audio_URL" in df.columns else 0
+    has_preview = int(df["Preview_Audio_URL"].notna().sum()) if "Preview_Audio_URL" in df.columns else 0
 
     logger.info("=" * 55)
     logger.info("[THÀNH CÔNG] HOÀN TẤT BƯỚC 5")
-    logger.info(f"[-] Tổng bài hát master   : {len(df):,}")
-    logger.info(f"[-] Số cột                : {len(df.columns)}")
-    logger.info(f"[-] Audio features có mặt : {len(audio_present)}/13")
-    logger.info(f"[-] Bài có link Preview   : {has_preview:,}")
-    logger.info(f"[-] File lưu tại          : {out_file}")
+    logger.info(f"[-] Tổng bài hát master: {len(df):,}")
+    logger.info(f"[-] Số cột: {len(df.columns)}")
+    logger.info(f"[-] Audio features có mặt: {len(audio_present)}/13")
+    logger.info(f"[-] Bài có link Preview: {has_preview:,}")
+    logger.info(f"[-] File lưu tại: {out_file}")
     logger.info("=" * 55)
 
 
@@ -250,24 +250,24 @@ def log_summary(df, out_file, logger):
 def main():
     logger = get_logger("Step05_MergeMasterDataset", "step5.log")
 
-    meta_file   = str(PipelineConfig.CLEANED_DATA_FILE)     # Bước 3
+    meta_file = str(PipelineConfig.CLEANED_DATA_FILE)  # Bước 3
     lyrics_file = str(PipelineConfig.VIETNAMESE_ONLY_FILE)  # Bước 4
-    out_file    = str(PipelineConfig.MASTER_DATASET_FILE)   # Bước 5 output
+    out_file = str(PipelineConfig.MASTER_DATASET_FILE)   # Bước 5 output
 
     logger.info("=" * 55)
     logger.info("BUOC 5: GOP DU LIEU -> MASTER DATASET")
     logger.info("=" * 55)
-    logger.info(f"[-] Metadata (Buoc 3)  : {meta_file}")
-    logger.info(f"[-] Lyrics VI (Buoc 4) : {lyrics_file}")
-    logger.info(f"[-] Master output      : {out_file}")
+    logger.info(f"[-] Metadata (Buoc 3): {meta_file}")
+    logger.info(f"[-] Lyrics VI (Buoc 4): {lyrics_file}")
+    logger.info(f"[-] Master output: {out_file}")
     logger.info("-" * 55)
 
     # đọc dữ liệu đầu vào
-    df_meta   = load_csv(meta_file,   "metadata",  logger)
+    df_meta = load_csv(meta_file, "metadata",  logger)
     df_lyrics = load_csv(lyrics_file, "lyrics_vi", logger)
 
     # chuẩn hoá cột ID
-    df_meta   = normalize_id_col(df_meta)
+    df_meta = normalize_id_col(df_meta)
     df_lyrics = normalize_id_col(df_lyrics)
 
     # pipeline xử lý tuần tự

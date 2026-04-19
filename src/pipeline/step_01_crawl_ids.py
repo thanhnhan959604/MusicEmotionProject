@@ -11,7 +11,6 @@ SEED_KEYWORDS = PipelineConfig.SEED_KEYWORDS
 # HELPERS - ĐỌC / GHI CACHE
 
 def load_cache(logger):
-    """Phục hồi tiến trình từ lần chạy trước."""
     unique_track_ids = set()
     crawled_keywords = set()
 
@@ -35,13 +34,11 @@ def load_cache(logger):
 
 
 def save_keyword_cache(keyword):
-    """Ghi keyword vào cache sau khi quét xong."""
     with open(PipelineConfig.CRAWLED_ARTISTS_FILE, "a", encoding="utf-8") as f:
         f.write(f"{keyword}\n")
 
 
 def save_batch(batch_data, unique_track_ids, logger):
-    """Ghi batch vào CSV đầu ra và track_ids.txt."""
     output_csv = str(PipelineConfig.CRAWLED_TRACKS_CSV)
 
     # Ghi CSV (append)
@@ -69,7 +66,7 @@ def main():
     logger.info("=" * 55)
     logger.info("BẮT ĐẦU: BƯỚC 1 - THU THẬP TRACK IDs")
     logger.info("=" * 55)
-    logger.info(f"[-] Mục tiêu   : {PipelineConfig.TARGET_COUNT:,} bài hát")
+    logger.info(f"[-] Mục tiêu : {PipelineConfig.TARGET_COUNT:,} bài hát")
     logger.info(f"[-] Seed words : {len(SEED_KEYWORDS)} từ khóa")
     logger.info("-" * 55)
 
@@ -175,7 +172,7 @@ def main():
             f"[KẾT THÚC] Thu được {len(unique_track_ids):,} IDs. "
             "Thêm keyword vào SEED_KEYWORDS nếu muốn nhiều hơn."
         )
-    logger.info(f"[-] CSV      : {PipelineConfig.CRAWLED_TRACKS_CSV}")
+    logger.info(f"[-] CSV : {PipelineConfig.CRAWLED_TRACKS_CSV}")
     logger.info(f"[-] IDs file : {PipelineConfig.TRACK_IDS_FILE}")
     logger.info("=" * 55)
 

@@ -241,7 +241,7 @@ def log_summary(results, no_url_count, audio_dir, log_file, logger):
     skipped  = sum(1 for r in results if r["Status"] == STATUS_SKIP)
 
     http_err = sum(1 for r in results if r["Status"].startswith(STATUS_HTTP_ERR))
-    net_err  = sum(1 for r in results if r["Status"].startswith(STATUS_NET_ERR))
+    net_err = sum(1 for r in results if r["Status"].startswith(STATUS_NET_ERR))
 
     # đếm tổng file MP3 thực tế sau khi tải
     total_mp3 = len([f for f in os.listdir(audio_dir) if f.endswith(".mp3")])

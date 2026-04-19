@@ -12,7 +12,7 @@ class Spotify81Client:
         self.api_key = os.getenv("RAPIDAPI_KEY")
         self.host = "spotify81.p.rapidapi.com"
         
-        #kiểm tra env có tồn tại
+        # kiểm tra env có tồn tại
         if not self.api_key:
             raise ValueError("[LOI]: Không tìm thấy RAPIDAPI_KEY")
         
@@ -22,14 +22,14 @@ class Spotify81Client:
             "Content-Type": "application/json"
         }
     
-    #hàm gửi yêu cầu
+    # hàm gửi yêu cầu
     def get(self, endpoint, params=None, max_retries=3):
         
         url = f"https://{self.host}{endpoint}"
         
         for attempt in range(max_retries):
             try:
-                #gửi yêu cầu lên server
+                # gửi yêu cầu lên server
                 response = requests.get(url=url, headers=self.headers, params=params, timeout=15)
                 
                 if response.status_code == 200:
@@ -39,7 +39,7 @@ class Spotify81Client:
                     print(f"[LOI] Server đang quá tải (lỗi 429). Nghỉ 15s... (Lần thử {attempt + 1}/{max_retries})")
                     time.sleep(15)
                     
-                #nếu sai key hoặc đạt limit của API
+                # nếu sai key hoặc đạt limit của API
                 elif response.status_code == 403:
                     print(f"[LOI] Lỗi API ({response.status_code}): {response.text}")
                     break
